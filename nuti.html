@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarstack - Connect with University Developers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            background: #000000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: rgba(219, 49, 49, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        nav ul li a {
+            display: block;
+            color: white;
+            padding: 16px 24px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        nav ul li a:hover {
+            background-color: #111;
+            color: #4CAF50;
+        }
+
+        /* 3D Canvas */
+        #space-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        /* Sections */
+        .section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease, transform 1s ease;
+            z-index: 2;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-content {
+            max-width: 1200px;
+            width: 100%;
+            color: white;
+            text-align: center;
+        }
+
+        /* Hero Section */
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(165, 243, 252, 0.4);
+            letter-spacing: 2px;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        .hero .tagline {
+            font-size: 1.8rem;
+            color: #db3131;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        /* About Section */
+        .about {
+            background: linear-gradient(135deg, rgba(219, 49, 49, 0.1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .about h2 {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            color: #a5f3fc;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .about-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(165, 243, 252, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .about-card h3 {
+            color: #db3131;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .about-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .about-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            margin: 30px auto;
+            display: block; 
+            box-shadow: 0 10px 40px rgba(165, 243, 252, 0.2);
+        }
+
+        /* Services Section */
+        .services h2 {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            color: #fca311;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .service-card {
+            background: rgba(252, 163, 17, 0.1);
+            padding: 40px 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(252, 163, 17, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            background: rgba(252, 163, 17, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(252, 163, 17, 0.4);
+        }
+
+        .service-card h3 {
+            color: #fca311;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .service-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Solar System Section */
+        .solar-system-section {
+            background: radial-gradient(circle at center, rgba(252, 163, 17, 0.1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .solar-system-section h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #fca311;
+            text-shadow: 0 0 30px rgba(252, 163, 17, 0.5);
+        }
+
+        .solar-system-section p {
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, rgba(165, 243, 252, 0.1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .contact h2 {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            color: #a5f3fc;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+            margin-top: 50px;
+        }
+
+        .contact-info {
+            text-align: left;
+        }
+
+        .contact-info h3 {
+            color: #db3131;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .contact-info p {
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(165, 243, 252, 0.2);
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(165, 243, 252, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: #64748b;
+        }
+
+        .contact-form button {
+            width: 100%;
+            padding: 15px;
+            background: #db3131;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contact-form button:hover {
+            background: #ff4d4d;
+            box-shadow: 0 0 20px rgba(219, 49, 49, 0.5);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            background: #db3131;
+            border: 2px solid rgba(165, 243, 252, 0.5);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #ff4d4d;
+            box-shadow: 0 0 30px rgba(219, 49, 49, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #a5f3fc;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(165, 243, 252, 0.2);
+        }
+
+        /* Images */
+        .feature-image {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            margin: 30px auto;
+            display: block;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .about h2, .services h2, .contact h2 { font-size: 2rem; }
+            nav ul li a { padding: 12px 16px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#solar">Innovation</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- 3D Canvas -->
+    <canvas id="space-canvas"></canvas>
+    <div class="overlay"></div>
+
+    <!-- Section 1: Hero with Starfield -->
+    <section class="section hero active" id="home">
+        <div class="section-content">
+            <h1>SCHOLARSTACK</h1>
+            <p class="tagline">Where Innovation Meets Education</p>
+            <p>Connect with top-tier university developers who are passionate about building real-world solutions. We bridge the gap between academic excellence and professional development, offering you access to fresh talent, modern tech stacks, and student-friendly rates.</p>
+            <p>Whether you're a startup looking for affordable development or a student seeking real-world experience, ScholarStack is your gateway to innovation.</p>
+            <a href="#about" class="btn">Explore Our Platform</a>
+            <a href="#contact" class="btn btn-secondary">Get Started Today</a>
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=300&fit=crop" alt="Team collaboration" class="feature-image">
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">▼</div>
+    </section>
+
+    <!-- Section 2: About -->
+    <section class="section about" id="about">
+        <div class="section-content">
+            <h2>Why Choose ScholarStack?</h2>
+            <p>We're more than just a marketplace—we're a community of innovators, learners, and builders.</p>
+            
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=300&fit=crop" alt="Students working" class="about-image">
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3> Verified Talent</h3>
+                    <p>All our developers are currently enrolled in accredited universities and have passed rigorous technical assessments. We ensure quality while supporting education.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Modern Tech Stack</h3>
+                    <p>Our students work with cutting-edge technologies including React, Node.js, Python, AI/ML frameworks, cloud platforms, and mobile development tools.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Affordable Rates</h3>
+                    <p>Get professional-quality development at 40-60% lower costs compared to traditional agencies. Perfect for startups, small businesses, and MVPs.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Mentorship & Support</h3>
+                    <p>Every project includes guidance from industry professionals. Students learn while delivering, ensuring continuous improvement and quality output.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Global Community</h3>
+                    <p>Connect with talented developers from universities worldwide. Diverse perspectives lead to innovative solutions and creative problem-solving.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Learning Platform</h3>
+                    <p>Students gain real-world experience, build portfolios, and develop professional skills while earning. It's a win-win for everyone.</p>
+                </div>
+            </div>
+            
+            <a href="#services" class="btn">View Our Services</a>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('services').scrollIntoView({behavior: 'smooth'})">▼</div>
+    </section>
+
+    <!-- Section 3: Services -->
+    <section class="section services" id="services">
+        <div class="section-content">
+            <h2>Our Services</h2>
+            <p>From web development to AI solutions, our talented developers can handle projects of any complexity.</p>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"></div>
+                    <h3>Web Development</h3>
+                    <p>Custom websites, web applications, and e-commerce platforms built with React, Vue, Angular, and modern frameworks. Responsive, fast, and SEO-optimized.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"></div>
+                    <h3>Mobile Apps</h3>
+                    <p>Native and cross-platform mobile applications for iOS and Android using React Native, Flutter, and Swift. Intuitive UI/UX design included.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"></div>
+                    <h3>AI & Machine Learning</h3>
+                    <p>Intelligent solutions including chatbots, predictive analytics, computer vision, and natural language processing using Python, TensorFlow, and PyTorch.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"></div>
+                    <h3>Cloud Solutions</h3>
+                    <p>Cloud architecture, migration, and management on AWS, Azure, and Google Cloud. Scalable, secure, and cost-effective infrastructure.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"></div>
+                    <h3>UI/UX Design</h3>
+                    <p>User-centered design that combines aesthetics with functionality. Wireframing, prototyping, and user testing for optimal experiences.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Debugging & Support</h3>
+                    <p>Code review, bug fixing, performance optimization, and ongoing maintenance. We help troubleshoot issues across all programming languages.</p>
+                </div>
+            </div>
+            
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=300&fit=crop" alt="Development work" class="feature-image">
+            
+            <a href="#contact" class="btn">Start Your Project</a>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('solar').scrollIntoView({behavior: 'smooth'})">▼</div>
+    </section>
+
+    <!-- Section 4: Solar System Innovation -->
+    <section class="section solar-system-section" id="solar">
+        <div class="section-content">
+            <h2> Innovation in Orbit</h2>
+            <p>Just like planets orbit the sun, our developers revolve around innovation, constantly learning and evolving. Each project is a new galaxy to explore.</p>
+            <p>We believe in sustainable growth, continuous learning, and building solutions that stand the test of time. Our ecosystem thrives on collaboration, creativity, and cutting-edge technology.</p>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3> Continuous Learning</h3>
+                    <p>Like planets in constant motion, our developers are always learning new technologies and methodologies to stay ahead of the curve.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Future-Focused</h3>
+                    <p>We don't just build for today—we architect solutions for tomorrow, using emerging technologies and best practices.</p>
+                </div>
+                <div class="about-card">
+                    <h3> Limitless Possibilities</h3>
+                    <p>From simple websites to complex AI systems, the universe of what we can build together is infinite.</p>
+                </div>
+            </div>
+            
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&h=300&fit=crop" alt="Space innovation" class="feature-image">
+            
+            <a href="#contact" class="btn">Join Our Universe</a>
+            <a href="#home" class="btn btn-secondary">Back to Top</a>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">▼</div>
+    </section>
+
+    <!-- Section 5: Contact -->
+    <section class="section contact" id="contact">
+        <div class="section-content">
+            <h2>Let's Build Something Amazing</h2>
+            <p>Ready to transform your idea into reality? Get in touch with us today.</p>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <p> Email: Ohumphrey373@gmail.com</p>
+                    <p> Phone: +254797878011</p>
+                    <p> Location: University Innovation Hub, Karen, Nairobi</p>
+                    <p> Hours: Mon-Fri, 9AM-6PM</p>
+                    <br>
+                    <h3>Why Contact Us?</h3>
+                    <p>✓ Free project consultation</p>
+                    <p>✓ Quick response within 24 hours</p>
+                    <p>✓ Transparent pricing</p>
+                    <p>✓ No obligation quotes</p>
+                    <p>✓ Dedicated project manager</p>
+                </div>
+                
+                <div class="contact-form">
+                    <form>
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <input type="text" placeholder="Project Type">
+                        <textarea rows="5" placeholder="Tell us about your project..." required></textarea>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </div>
+            </div>
+            
+            <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&h=300&fit=crop" alt="Contact us" class="feature-image">
+        </div>
+    </section>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ==========================================
+        // MULTI-SCENE 3D SYSTEM
+        // ==========================================
+
+        const canvas = document.getElementById('space-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
+        
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: canvas, 
+            antialias: true,
+            alpha: true 
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x222222);
+        scene.add(ambientLight);
+        const sunLight = new THREE.PointLight(0xffffff, 2.5, 400);
+        scene.add(sunLight);
+
+        // Current scene state: 'starfield' or 'solarsystem'
+        let currentScene = 'starfield';
+        let targetScene = 'starfield';
+
+        // ==========================================
+        // STARFIELD SCENE
+        // ==========================================
+        const starCount = 15000;
+        const starGeometry = new THREE.BufferGeometry();
+        const starPositions = new Float32Array(starCount * 3);
+        const starColors = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount; i++) {
+            starPositions[i * 3] = (Math.random() - 0.5) * 2500;
+            starPositions[i * 3 + 1] = (Math.random() - 0.5) * 2500;
+            starPositions[i * 3 + 2] = (Math.random() - 0.5) * 2500;
+
+            const colorType = Math.random();
+            if (colorType > 0.85) { starColors[i * 3] = 0.4; starColors[i * 3 + 1] = 0.8; starColors[i * 3 + 2] = 1.0; } 
+            else if (colorType > 0.70) { starColors[i * 3] = 0.7; starColors[i * 3 + 1] = 0.4; starColors[i * 3 + 2] = 1.0; } 
+            else { starColors[i * 3] = 1.0; starColors[i * 3 + 1] = 1.0; starColors[i * 3 + 2] = 1.0; }
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+        const starMaterial = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 1,
+            blending: THREE.AdditiveBlending
+        });
+        const starField = new THREE.Points(starGeometry, starMaterial);
+        scene.add(starField);
+
+        // ==========================================
+        // SOLAR SYSTEM SCENE
+        // ==========================================
+        const solarSystemGroup = new THREE.Group();
+        solarSystemGroup.visible = false;
+        scene.add(solarSystemGroup);
+
+        // Sun with Shader
+        const sunVertexShader = `
+            varying vec2 vUv;
+            void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+        `;
+        const sunFragmentShader = `
+            uniform float uTime;
+            varying vec2 vUv;
+            float hash(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+            float noise(vec2 x) {
+                vec2 i = floor(x); vec2 f = fract(x);
+                float a = hash(i); float b = hash(i + vec2(1.0, 0.0));
+                float c = hash(i + vec2(0.0, 1.0)); float d = hash(i + vec2(1.0, 1.0));
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+            }
+            void main() {
+                float n = noise(vUv * 8.0 + uTime * 0.15);
+                float n2 = noise(vUv * 16.0 - uTime * 0.1);
+                float combined = n * 0.7 + n2 * 0.3;
+                vec3 color1 = vec3(1.0, 0.2, 0.0); 
+                vec3 color2 = vec3(1.0, 0.7, 0.1); 
+                vec3 color3 = vec3(1.0, 1.0, 0.8); 
+                vec3 finalColor = mix(color1, color2, combined);
+                finalColor = mix(finalColor, color3, pow(combined, 3.0));
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+        const sunMaterial = new THREE.ShaderMaterial({
+            uniforms: { uTime: { value: 0 } },
+            vertexShader: sunVertexShader,
+            fragmentShader: sunFragmentShader
+        });
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(6, 64, 64), sunMaterial);
+        solarSystemGroup.add(sun);
+
+        // Sun Glow
+        function createGlowTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(128, 128, 0, 128, 128, 128);
+            gradient.addColorStop(0, 'rgba(255, 200, 100, 1)');
+            gradient.addColorStop(0.2, 'rgba(255, 150, 50, 0.6)');
+            gradient.addColorStop(0.5, 'rgba(255, 100, 0, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 256, 256);
+            return new THREE.CanvasTexture(canvas);
+        }
+        const glowMaterial = new THREE.SpriteMaterial({ 
+            map: createGlowTexture(), color: 0xffaa00, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        });
+        const sunGlow = new THREE.Sprite(glowMaterial);
+        sunGlow.scale.set(25, 25, 1);
+        solarSystemGroup.add(sunGlow);
+
+        // Planets
+        const planetsData = [
+            { name: 'Mercury', size: 0.8, distance: 14, speed: 0.04, color: 0xaaaaaa, inclination: 0.12, tilt: 0.001 },
+            { name: 'Venus', size: 1.2, distance: 20, speed: 0.015, color: 0xe3bb76, inclination: 0.06, tilt: 3.1 },
+            { name: 'Earth', size: 1.3, distance: 28, speed: 0.01, color: 0x22aaff, inclination: 0.00, tilt: 0.41 },
+            { name: 'Mars', size: 1.0, distance: 36, speed: 0.008, color: 0xff4422, inclination: 0.03, tilt: 0.44 },
+            { name: 'Jupiter', size: 3.0, distance: 55, speed: 0.002, color: 0xd9a066, inclination: 0.02, tilt: 0.05 },
+            { name: 'Saturn', size: 2.5, distance: 75, speed: 0.0009, color: 0xeedc92, inclination: 0.04, tilt: 0.47, hasRings: true },
+            { name: 'Uranus', size: 1.8, distance: 95, speed: 0.0004, color: 0x66ccff, inclination: 0.01, tilt: 1.71 },
+            { name: 'Neptune', size: 1.7, distance: 115, speed: 0.0001, color: 0x3333ff, inclination: 0.03, tilt: 0.49 }
+        ];
+
+        const planets = [];
+        planetsData.forEach(data => {
+            const orbitGroup = new THREE.Group();
+            orbitGroup.rotation.x = data.inclination;
+            solarSystemGroup.add(orbitGroup);
+
+            const geometry = new THREE.SphereGeometry(data.size, 64, 64);
+            const material = new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.8, metalness: 0.1 });
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            const planetGroup = new THREE.Group();
+            planetGroup.rotation.z = data.tilt;
+            planetGroup.add(mesh);
+            orbitGroup.add(planetGroup);
+
+            if (data.hasRings) {
+                const ringGeo = new THREE.RingGeometry(data.size + 0.8, data.size + 3.5, 128);
+                const ringCanvas = document.createElement('canvas');
+                ringCanvas.width = 512; ringCanvas.height = 64;
+                const rCtx = ringCanvas.getContext('2d');
+                const rGrad = rCtx.createLinearGradient(0,0,512,0);
+                rGrad.addColorStop(0, 'rgba(200, 180, 140, 0.1)');
+                rGrad.addColorStop(0.2, 'rgba(220, 200, 160, 0.8)');
+                rGrad.addColorStop(0.5, 'rgba(180, 160, 120, 0.2)');
+                rGrad.addColorStop(0.8, 'rgba(210, 190, 150, 0.7)');
+                rGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                rCtx.fillStyle = rGrad;
+                rCtx.fillRect(0,0,512,64);
+                
+                const ringMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(ringCanvas), side: THREE.DoubleSide, transparent: true, depthWrite: false });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.x = Math.PI / 2;
+                mesh.add(ring);
+            }
+
+            const orbitCurve = new THREE.EllipseCurve(0, 0, data.distance, data.distance * 0.98, 0, 2 * Math.PI, false, 0);
+            const orbitPoints = orbitCurve.getPoints(150);
+            const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+            const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 });
+            const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
+            orbitLine.rotation.x = Math.PI / 2;
+            orbitGroup.add(orbitLine);
+
+            planets.push({ mesh: mesh, distance: data.distance, speed: data.speed, angle: Math.random() * Math.PI * 2, eccentricity: 0.02 });
+        });
+
+        // Camera setup
+        camera.position.set(0, 40, 120);
+        camera.lookAt(0, 0, 0);
+
+        // Mouse interaction
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            const x = (event.clientX - window.innerWidth / 2);
+            const y = (event.clientY - window.innerHeight / 2);
+            mouseX = x * 0.002;
+            mouseY = y * 0.002;
+            
+            if (currentScene === 'solarsystem') {
+                const sensitivity = 0.004;
+                targetRotationY = x * sensitivity;
+                targetRotationX = y * sensitivity;
+            }
+        });
+
+        // ==========================================
+        // SCROLL DETECTION & TRANSITIONS
+        // ==========================================
+        const sections = document.querySelectorAll('.section');
+        let lastScrollY = window.scrollY;
+        let scrollTimeout;
+
+        function getCurrentSection() {
+            const scrollY = window.scrollY;
+            const windowHeight = window.innerHeight;
+            
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                const sectionTop = section.offsetTop - windowHeight / 2;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                    return section.id;
+                }
+            }
+            return 'home';
+        }
+
+        function update3DScene(sectionId) {
+            if (sectionId === 'solar' && currentScene !== 'solarsystem') {
+                targetScene = 'solarsystem';
+                // Smooth transition
+                setTimeout(() => {
+                    starField.visible = false;
+                    solarSystemGroup.visible = true;
+                    currentScene = 'solarsystem';
+                    camera.position.set(0, 40, 120);
+                }, 500);
+            } else if (sectionId !== 'solar' && currentScene !== 'starfield') {
+                targetScene = 'starfield';
+                setTimeout(() => {
+                    solarSystemGroup.visible = false;
+                    starField.visible = true;
+                    currentScene = 'starfield';
+                    camera.position.z = 1000;
+                }, 500);
+            }
+        }
+
+        // Intersection Observer for section visibility
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    update3DScene(entry.target.id);
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // ==========================================
+        // ANIMATION LOOP
+        // ==========================================
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            if (currentScene === 'starfield') {
+                // Starfield animation
+                targetRotationX = mouseX * 2;
+                targetRotationY = mouseY * 2;
+                starField.rotation.y += 0.05 * (targetRotationY - starField.rotation.y);
+                starField.rotation.x += 0.05 * (targetRotationX - starField.rotation.x);
+
+                camera.position.z -= 0.5;
+                if (camera.position.z < -1000) {
+                    camera.position.z = 1000;
+                }
+                camera.position.y = Math.sin(elapsedTime * 0.2) * 20;
+                camera.position.x = Math.cos(elapsedTime * 0.15) * 20;
+                starField.rotation.z += 0.0002;
+                
+            } else if (currentScene === 'solarsystem') {
+                // Solar system animation
+                sunMaterial.uniforms.uTime.value = elapsedTime;
+                sun.rotation.y += 0.002;
+                const pulse = 1 + Math.sin(elapsedTime * 2) * 0.02;
+                sunGlow.scale.set(25 * pulse, 25 * pulse, 1);
+
+                planets.forEach(p => {
+                    p.angle += p.speed;
+                    const r = p.distance * (1 - p.eccentricity * p.eccentricity) / (1 + p.eccentricity * Math.cos(p.angle));
+                    p.mesh.position.x = Math.cos(p.angle) * r;
+                    p.mesh.position.z = Math.sin(p.angle) * r;
+                    p.mesh.rotation.y += 0.01;
+                });
+
+                solarSystemGroup.rotation.y += 0.0003;
+                solarSystemGroup.rotation.y += (targetRotationY - solarSystemGroup.rotation.y) * 0.05;
+                solarSystemGroup.rotation.x += (targetRotationX - solarSystemGroup.rotation.x) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
